@@ -44,7 +44,6 @@
 &ensp; - 查询批次较高的情况下，则要降低数据库的设计范式，允许特定的冗余，从而提高查询性能
 &ensp; (另外，注意数据库设计时主键尽量不要和业务逻辑产生关系，即主键应该是无意义的，如自增id)
 
-
 # 项目错误和解决方案
 ### 1. IDEA收到浏览器返回的参数值全部为null
 - 原因：在 Java 8 之前，编译后的 .class 文件不包含参数名称， 导致通过反射获取方法参数名时只能得到默认的
@@ -67,8 +66,43 @@
 - 原因：数据库中Topic的author属性存储的是Integer，而Topic类中其属性为UserBasic，需要把其包装成UserBasic类才能放到Topic类中
 - 方法1：一个解决方案是直接只修改BaseDAO中的setValue方法，使得当类中属性的类型为自定义类型(如UserBasic)时，根据参数创造该自定义类型实例并传入
 - 方法2：我的想法是同样重写setValue方法，但我的setValue是优先调用类中的set方法(这里set方法的参数属性必须和setValue传入的参数属性一致)，如果
-  没有再直接赋值，然后在类中重写set方法。这样的好处是可以不用把代码在底层写死，而是可以修改类中的set方法实现不同类型的赋值
+  没有再直接赋值，然后在类中重写set方法(根据id简单地new一个对象然后赋给author属性)，最后在Service层根据topic的author的id给author补充上完整
+  的信息(调用BasicService的方法获取对应的author实例)。  
+  同理，Reply在在Service层将author和hostReply信息补全，hostReply在Service层将author信息补全。  
+  这样的好处是可以不用把代码在底层写死，而是可以修改类中的set方法实现不同类型的赋值。
   (思想类似于现有的数据库工具包，即先调用set，没有再赋值)
 ### 6. html页面没有样式，同时数据也不展示
 - 原因：我们是直接去请求的静态页面资源，并没有执行super.processTemplate()，也就是thymeleaf未生效
 - 方法：新增PageController(放到通用代码myspringmvc中)，添加page方法，目的是发送给中央控制器执行processTemplate进行thymeleaf渲染
+### 7. thymeleaf语法未生效
+- 原因：可能是资源的路径错误(如 session.topic.replyList 中缺少"session."，或者是 frames/left 中缺少"frames/"，或者是 
+  th:src="@{|/imgs/${session.topic.author.headImg}|}" 中缺少 "| ... |" (th语法中同时有字符串和变量需要用|连接) )
+- 方法：可以在html中写 <span th:text="${...}"></span> 输出发生错误的变量
+### 8. 添加回复时数据库未获取到输入框中的内容
+- 原因：detail.html中 <textarea ... > 里面没有name属性，controller无法从页面中的输入框中获取输入信息
+- 方法：<td><textarea name="content" rows="3">这里是另一个回复！</textarea></td> （注意：name的值要和controller中方法里的参数名一致）
+
+# 实现过程和注意事项
+## 主界面
+### index.html
+- 3个iframe，每个iframe通过thymeleaf渲染出top/left/main.html
+### top.html
+- 判断是否是自己的空间 th:if="${session.userBasic.id!=session.friend.id}" ，如果不相等则多显示一个"返回自己空间"
+- 返回自己空间的逻辑和left.html中打开好友空间的逻辑类似
+### left.html
+- 通过遍历当前userBasic(登录者)的friendList来显示他的好友
+- 通过iframe的 target="_top" (注：_blank在新窗口打开, _parent在父窗口打开, _top在顶层窗口打开)，将点击的好友的日志在顶层窗口中打开
+### main.html
+- main页面应该显示friend(当前空间的主人)中的topicList，而不是userBasi(登录者)c中的topicList
+## 日志详情页
+### 需求
+- 1） 已知topic的id，需要根据topic的id获取特定topic
+- 2） 获取这个topic关联的所有回复
+- 3） 如果某个回复有主人回复，需要查询出来
+### 实现
+- 在topicController中获取指定的topic
+- 具体这个topic关联多少个reply由replyService内部实现
+- 同理，reply是否有关联的hostReply也由replyService内部实现(调用hostReplyService的方法查询，并赋给当前topic)
+## 添加回复
+## 添加主人回复
+## 删除日志功能

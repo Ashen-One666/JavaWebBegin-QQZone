@@ -5,6 +5,7 @@ import com.fizz.qqzone.dao.UserBasicDAO;
 import com.fizz.qqzone.dao.impl.UserBasicDAOImpl;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Topic {
@@ -18,6 +19,10 @@ public class Topic {
     private List<Reply> replyList;  // 1 : N
 
     public Topic(){}
+
+    public Topic(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId() {
         return id;
@@ -56,13 +61,13 @@ public class Topic {
     }
 
     public void setAuthor(UserBasic author) {
-        //System.out.println(author);
         this.author = author;
     }
+
     public void setAuthor(Integer author) {
-        UserBasicDAO userBasicDAO = new UserBasicDAOImpl();
-        this.author = userBasicDAO.getUserBasicById(author);
+        this.author = new UserBasic(author);
     }
+
     public List<Reply> getReplyList() {
         return replyList;
     }

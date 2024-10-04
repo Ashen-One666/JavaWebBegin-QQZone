@@ -15,3 +15,4 @@ function delFruit(fid){
         //window.location.href="/fruit/del?fid="+fid;
     }
 }
+

@@ -3,16 +3,28 @@ package com.fizz.qqzone.pojo;
 import com.fizz.qqzone.dao.UserBasicDAO;
 import com.fizz.qqzone.dao.impl.UserBasicDAOImpl;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class HostReply {
     private Integer id;
     private String content;
-    private Date hostReplyTime;
+    private LocalDateTime hostReplyDate;
     private UserBasic author;   // M : 1
     private Reply reply;        // 1 : 1
 
     public HostReply() {}
+
+    public HostReply(Integer id) {
+        this.id = id;
+    }
+
+    public HostReply(String content, LocalDateTime hostReplyDate, UserBasic author, Reply reply) {
+        this.content = content;
+        this.hostReplyDate = hostReplyDate;
+        this.author = author;
+        this.reply = reply;
+    }
 
     public Integer getId() {
         return id;
@@ -30,12 +42,12 @@ public class HostReply {
         this.content = content;
     }
 
-    public Date getHostReplyTime() {
-        return hostReplyTime;
+    public LocalDateTime getHostReplyDate() {
+        return hostReplyDate;
     }
 
-    public void setHostReplyTime(Date hostReplyTime) {
-        this.hostReplyTime = hostReplyTime;
+    public void setHostReplyDate(LocalDateTime hostReplyDate) {
+        this.hostReplyDate = hostReplyDate;
     }
 
     public UserBasic getAuthor() {
@@ -47,8 +59,7 @@ public class HostReply {
     }
 
     public void setAuthor(Integer author) {
-        UserBasicDAO userBasicDAO = new UserBasicDAOImpl();
-        this.author = userBasicDAO.getUserBasicById(author);
+        this.author = new UserBasic(author);
     }
 
     public Reply getReply() {
@@ -57,5 +68,9 @@ public class HostReply {
 
     public void setReply(Reply reply) {
         this.reply = reply;
+    }
+
+    public void setReply(Integer reply) {
+        this.reply = new Reply(reply);
     }
 }

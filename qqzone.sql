@@ -4,7 +4,7 @@ USE qqzonedb2;
 
 /*Table structure for table `t_user_basic` */
 
-CREATE TABLE `t_user_basic` (
+CREATE TABLE IF NOT EXISTS  `t_user_basic` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `loginId` VARCHAR(20) NOT NULL,
   `nickName` VARCHAR(50) NOT NULL,
@@ -16,10 +16,10 @@ CREATE TABLE `t_user_basic` (
 
 /*Data for the table `t_user_basic` */
 
-INSERT  INTO `t_user_basic`(`id`,`loginId`,`nickName`,`pwd`,`headImg`) VALUES (1,'u001','jim','ok','h1.jpeg'),(2,'u002','tom','ok','h2.jpeg'),(3,'u003','kate','ok','h3.jpeg'),(4,'u004','lucy','ok','h4.jpeg'),(5,'u005','张三丰','ok','h5.jpeg');
+INSERT  INTO `t_user_basic`(`id`,`loginId`,`nickName`,`pwd`,`headImg`) VALUES (1,'u001','Geralt','ok','Geralt.jpeg'),(2,'u002','Yennefer','ok','Yennefer.jpeg'),(3,'u003','Triss','ok','Triss.jpeg'),(4,'u004','Ciri','ok','Ciri.jpeg'),(5,'u005','Eredin','ok','Eredin.jpeg');
 
 
-CREATE TABLE `t_friend` (
+CREATE TABLE IF NOT EXISTS `t_friend` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `uid` INT(11) DEFAULT NULL,
   `fid` INT(11) DEFAULT NULL,
@@ -36,7 +36,7 @@ INSERT  INTO `t_friend`(`id`,`uid`,`fid`) VALUES (1,1,2),(2,1,3),(3,1,4),(4,1,5)
 
 /*Table structure for table `t_topic` */
 
-CREATE TABLE `t_topic` (
+CREATE TABLE IF NOT EXISTS `t_topic` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(100) NOT NULL,
   `content` VARCHAR(500) NOT NULL,
@@ -49,12 +49,12 @@ CREATE TABLE `t_topic` (
 
 /*Data for the table `t_topic` */
 
-INSERT  INTO `t_topic`(`id`,`title`,`content`,`topicDate`,`author`) VALUES (3,'我的空间开通了，先做自我介绍！','大家好，我是铁锤妹妹！','2021-06-18 11:25:30',2),(8,'我的空间','我的空间','2021-07-14 16:16:40',1);
+INSERT  INTO `t_topic`(`id`,`title`,`content`,`topicDate`,`author`) VALUES (3,'我的空间开通了，先做自我介绍！','大家好，我是叶奈法！','2024-10-04 20:05:30',2),(8,'我的空间开通了！','大家好，我是杰洛特，欢迎来和我打昆特牌！','2024-10-01 10:10:00',1);
 
 
 /*Table structure for table `t_reply` */
 
-CREATE TABLE `t_reply` (
+CREATE TABLE IF NOT EXISTS `t_reply` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `content` VARCHAR(500) NOT NULL,
   `replyDate` DATETIME NOT NULL,
@@ -69,12 +69,12 @@ CREATE TABLE `t_reply` (
 
 /*Data for the table `t_reply` */
 
-INSERT  INTO `t_reply`(`id`,`content`,`replyDate`,`author`,`topic`) VALUES (3,'回复','2021-07-14 16:16:54',2,8),(4,'回复2222','2021-07-14 16:17:11',3,8),(5,'这里是第三个回复','2021-07-14 16:30:49',1,8);
+INSERT  INTO `t_reply`(`id`,`content`,`replyDate`,`author`,`topic`) VALUES (3,'我来！','2024-10-02 12:10:10',3,8),(4,'带我一个','2024-10-03 16:17:11',4,8),(5,'歪比巴卜','2024-10-04 16:30:49',5,8);
 
 
 /*Table structure for table `t_host_reply` */
 
-CREATE TABLE `t_host_reply` (
+CREATE TABLE IF NOT EXISTS `t_host_reply` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `content` VARCHAR(500) NOT NULL,
   `hostReplyDate` DATETIME NOT NULL,
@@ -87,12 +87,14 @@ CREATE TABLE `t_host_reply` (
   CONSTRAINT `FK_host_reply` FOREIGN KEY (`reply`) REFERENCES `t_reply` (`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
+INSERT  INTO `t_host_reply`(`id`,`content`,`hostReplyDate`,`author`,`reply`) VALUES (1,'欢迎！','2024-10-02 13:00:00',1,3),(2,'3缺1，要来吗？','2024-10-04 17:00:00',1,5);
+
 /*Data for the table `t_host_reply` */
 
 
 /*Table structure for table `t_user_detail` */
 
-CREATE TABLE `t_user_detail` (
+CREATE TABLE IF NOT EXISTS `t_user_detail` (
   `id` INT(11) NOT NULL,
   `realName` VARCHAR(20) DEFAULT NULL,
   `tel` VARCHAR(11) DEFAULT NULL,

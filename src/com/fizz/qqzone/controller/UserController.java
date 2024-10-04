@@ -17,19 +17,37 @@ public class UserController {
     public String login(String loginId, String pwd, HttpSession session) {
         UserBasic userBasic = userBasicService.login(loginId, pwd);
         if (userBasic != null) {
+            // 1-1 获取相关好友信息
             List<UserBasic> friendList = userBasicService.getFriendList(userBasic);
+            // 1-2 获取相关日志信息
             List<Topic> topicList = topicService.getTopicList(userBasic);
 
             userBasic.setFriendList(friendList);
             userBasic.setTopicList(topicList);
 
+            // userBasic这个key保存的是登录者的信息
+            // friend这个key保存的是当前进入的是谁的空间
             session.setAttribute("userBasic", userBasic);
-            //UserBasic userBasic1 = (UserBasic) session.getAttribute("userBasic");
+            session.setAttribute("friend", userBasic);
+
             return "index";
         }
         else {
             // 登录失败回到登录页面
             return "login";
         }
+    }
+
+    //
+    public String friend(Integer id, HttpSession session) {
+        // 根据id获取指定的用户信息
+        UserBasic currentFriend = userBasicService.getUserBasicById(id);
+
+        List<Topic> topicList = topicService.getTopicList(currentFriend);
+        currentFriend.setTopicList(topicList);
+
+        session.setAttribute("friend", currentFriend);
+
+        return "index";
     }
 }

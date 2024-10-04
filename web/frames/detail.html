@@ -5,30 +5,11 @@
     <title>Title</title>
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <link rel="stylesheet" th:href="@{/css/detail.css}">
-    <script language="JavaScript">
-        function showDelImg(imgId){
-            var obj = document.getElementById(imgId) ;
-            if(obj){
-                obj.style.display='inline';
-            }
-
-        }
-        function hiddenDelImg(imgId){
-            var obj = document.getElementById(imgId) ;
-            if(obj){
-                obj.style.display='none';
-            }
-        }
-        function delReply(replyId , topicId){
-            if(window.confirm("是否确认删除？")){
-                window.location.href='reply.do?operate=delReply&replyId='+replyId+'&topicId='+topicId;
-            }
-        }
-    </script>
+    <script src="../js/detail.js"></script>
 </head>
 <body>
     <div id="div_back_to_topic_list">
-        <a href="main.html">返回日志列表</a>
+        <a th:href="@{|/user.do?operate=friend&id=${session.friend.id}|}" target="_top">返回日志列表</a>
     </div>
     <div id="div_topic_detail">
         <div id="div_topic_info">
@@ -41,8 +22,10 @@
                         </div>
                         <div class="h32 center" style="width:100%;" th:text="${session.topic.author.nickName}">乔峰</div>
                     </td>
-                    <td class="topic_title" onmousemove="showDelImg('img01')" onmouseout="hiddenDelImg('img01')">
-                        <img id="img01" style="float: right;margin-top:2px;margin-right:2px;display: none;width:24px;height: 24px;" th:src="@{/imgs/del.jpg}"/>
+                    <td class="topic_title" onmousemove="showDelImg('delTopicImg')" onmouseout="hiddenDelImg('delTopicImg')">
+                        <img th:if="${session.userBasic.id==session.friend.id}"
+                             id="delTopicImg" class="delTopicImg" th:src="@{/imgs/del.jpg}"
+                             th:onclick="|delTopic(${session.topic.id})|"/>
                         <span th:text="${session.topic.title}">《萧某今天就和天下群雄决一死战，你们一起上吧！》</span>
                         <span class="title_date_right" th:text="${session.topic.topicDate}">2021-09-01 12:30:55</span>
                     </td>
@@ -61,25 +44,58 @@
                         </div>
                         <div class="h32 center" style="width:100%;" th:text="${reply.author.nickName}">段誉</div>
                     </td>
-                    <td class="reply_title" th:onmouseover="|showDelImg('img${reply.id}')|" th:onmouseout="|hiddenDelImg('img${reply.id}')|">
+                    <td class="reply_title" th:onmouseover="|showDelImg('delReplyImg${reply.id}')|" th:onmouseout="|hiddenDelImg('delReplyImg${reply.id}')|">
                         <span th:text="|回复:${session.topic.title}|">萧某今天就和天下群雄决一死战，你们一起上吧！</span>
                         <!--
                             出现删除这个小图标的条件：
                             1. 在我自己的空间（那当然我对自己的空间拥有所有的操作权限）
-                            2. 当前回复的作者就是我（那我可以删除自己的回复）
+                            2. 当前回复的作者是当前登录的人（那我可以删除别人topic中自己作出的回复）
                          -->
-                        <img th:if="${session.userBasic.id==session.friend.id || session.userBasic.id==reply.author.id}" th:id="|img${reply.id}|" class="delReplyImg" th:src="@{/imgs/del.jpg}" th:onclick="|delReply(${reply.id} , ${session.topic.id})|"/>
+                        <img th:if="${session.userBasic.id==session.friend.id || session.userBasic.id==reply.author.id}"
+                             th:id="|delReplyImg${reply.id}|" class="delReplyImg" th:src="@{/imgs/del.jpg}"
+                             th:onclick="|delReply(${reply.id} , ${session.topic.id})|"/>
                         <span class="title_date_right" th:text="${reply.replyDate}">2021-09-01 14:35:15</span>
                     </td>
                 </tr>
                 <tr>
-                    <td th:onmouseover="|showDelImg('a${reply.id}')|" th:onmouseout="|hiddenDelImg('a${reply.id}')|">
-                        <span th:text="${reply.content}">你可曾见过边关之上、宋辽相互仇杀的惨状？可曾见过宋人辽人妻离子散、家破人亡的情景？宋辽之间好容易罢兵数十年, 倘若刀兵再起, 契丹铁骑侵入南朝, 你可知将有多少宋人惨遭横死？多少辽人死于非命？!</span><br/>
-                        <ul style="width: 96%;border:1px dotted lightgray;list-style-type: none;padding-left:8px;padding-right:8px;" th:if="${reply.hostReply!=null}">
-                            <li style="color:#6e0000;font-size:12px;width: 100%;border:0px solid red;" th:text="${reply.hostReply.content}">你以为我是慕容复的人，所以和我比试？段兄弟年纪轻轻，就有如此武学修为，实属罕见！武林早已盛传大理段氏有一门绝学，叫六脉神剑，能以无形剑气杀人，果然真有此门神功！</li>
-                            <li style="color:#6e0000;font-size:12px;width:100%;border:0px solid blue;text-align: right;margin-right: 8px;" th:text="|主人回复于${reply.hostReply.hostReplyDate}|">主人回复于2021/10/01 11:50:30</li>
+                    <td >
+                        <span th:text="${reply.content}">这里是别人的回复内容</span><br/>
+                        <ul style="width: 96%; border: 1px dotted lightgray; list-style-type: none; padding-left: 8px; padding-right: 8px;" th:if="${reply.hostReply != null}"
+                            th:onmouseover="|showDelImg('delHostReplyImg${reply.id}')|" th:onmouseout="|hiddenDelImg('delHostReplyImg${reply.id}')|">
+                            <li>
+                                <img th:if="${session.userBasic.id==session.friend.id}"
+                                     th:id="|delHostReplyImg${reply.id}|" class="delHostReplyImg" th:src="@{/imgs/del.jpg}"
+                                     th:onclick="|delHostReply(${reply.id} , ${session.topic.id})|"/>
+                            </li>
+                            <li style="color: #6e0000; font-size: 12px; width: 100%; border: 0px solid red;" th:text="${reply.hostReply.content}"></li>
+                            <li style="color: #6e0000; font-size: 12px; width: 100%; border: 0px solid blue; text-align: right; margin-right: 8px;" th:text="|主人回复于${reply.hostReply.hostReplyDate}|">主人回复于2021/10/01 11:50:30</li>
                         </ul>
-                        <a th:id="|a${reply.id}|" th:unless="${reply.hostReply!=null}"  href="#" style="float: right;display: none;">主人回复</a>
+
+                        <div th:id="|div_add_host_reply_${reply.id}|" style="display: none;">
+                            <p class="add_reply_title">添加主人回复</p>
+                            <form action="hostReply.do" method="post">
+                                <input type="hidden" name="operate" value="addHostReply"/>
+                                <input type="hidden" name="topicId" th:value="${session.topic.id}"/>
+                                <input type="hidden" name="replyId" th:value="${reply.id}"/>
+                                <table>
+                                    <tr>
+                                        <th>回复内容：</th>
+                                        <td>
+                                            <textarea name="content" rows="3" placeholder="请输入主人回复内容..."></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2">
+                                            <input type="submit" value="提交回复"/>
+                                            <input type="reset" value="重置"/>
+                                        </th>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+
+                        <a th:if="${session.userBasic.id==session.friend.id && reply.hostReply==null }"
+                           th:id="|a${reply.id}|" href="#" style="float: right; display: none;" th:onclick="|showReplyBox(${reply.id})|">主人回复</a>
                     </td>
                 </tr>
             </table>
@@ -96,7 +112,8 @@
                     <td><input type="text" th:value="|《${session.topic.title}》|" value="《萧某今天就和天下群雄决一死战，你们一起上吧！》" readonly /></td>
                 </tr>
                 <tr>
-                    <th>回复内容1：</th>
+                    <th>回复内容：</th>
+                    <!-- 此处需要写name属性，这样controller才能从页面上获取到输入框里的内容 -->
                     <td><textarea name="content" rows="3">这里是另一个回复！</textarea></td>
                 </tr>
                 <tr>

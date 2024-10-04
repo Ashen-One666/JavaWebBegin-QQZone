@@ -1,10 +1,9 @@
-package com.fizz.qqzone.dao;
+package com.fizz.qqzone.service;
 
 import com.fizz.qqzone.pojo.HostReply;
 
-public interface HostReplyDAO {
-    // 根据reply的id查询关联的hostReply实体
+public interface HostReplyService {
     HostReply getHostReplyByReplyId(Integer replyId);
-    // 添加主人回复
+
     void addHostReply(HostReply hostReply);
 }
