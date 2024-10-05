@@ -80,7 +80,7 @@
 - 方法：可以在html中写 <span th:text="${...}"></span> 输出发生错误的变量
 ### 8. 添加回复时数据库未获取到输入框中的内容
 - 原因：detail.html中 <textarea ... > 里面没有name属性，controller无法从页面中的输入框中获取输入信息
-- 方法：<td><textarea name="content" rows="3">这里是另一个回复！</textarea></td> （注意：name的值要和controller中方法里的参数名一致）
+- 方法：<td>< textarea name="content" rows="3">这里是另一个回复！</textarea></td> （注意：name的值要和controller中方法里的参数名一致）
 ### 9. 删除带有主人回复的reply失败
 - 报错：Cannot delete or update a parent row: a foreign key constraint fails (`qqzonedb2`.`t_host_reply`, CONSTRAINT `FK_host_reply` FOREIGN KEY (`reply`) REFERENCES `t_reply` (`id`))
 - 原因：主人回复表t_host_reply中有外键约束（列reply引用了表t_reply中的列id），想要删除主表数据必须保证没有子表引用它
@@ -118,3 +118,76 @@
 - 用于确认当前登陆者是谁
 ### friend
 - 当前页面显示的qq空间的所有者是谁 (userBasic和friend不一致时，当前的登录者就没有修改他人空间的权限)
+# 七、关于该JavaWeb项目底层的一些说明
+### 1) 启动时访问网址
+- 问：系统启动时，我们访问的页面是 http://localhost:8080/page.do?operate=page&page=login 
+  为什么不是 http://localhost:8080/login.html
+- 答：后者是直接访问的静态页面，那么页面上的thymeleaf表达式浏览器是不能识别的。
+  我们访问前者的目的是执行 ViewBaseServlet中的processTemplate()
+### 2) 访问URL时的解析过程
+- 问：http://localhost:8080/context_root_name/page.do?operate=page&page=login 访问这个URL的过程是怎么样的？
+  （注：本项目中中央控制器DispatcherServlet未考虑context root，因此本项目的context root名称为空，即"/"）
+- 答：1.http:// -> 协议  2.localhost -> ServerIP  3.:8080 -> port  4./context_root_name -> context root  5. /page.do -> 
+  request.getServletPath()  6. ?operate=page&page=login -> query string
+  - DispatcherServlet -> urlPattern : *.do  拦截/page.do
+  - request.getServletPath() -> /page.do
+  - 解析处理字符串，将/page.do -> page
+  - 拿到page字符串，然后去IOC容器(beanFactory)中寻找id=page的那个bean对象 -> PageController.java
+  - 获取operate的值 -> page   因此得知，应该执行PageController中的page()方法
+  - PageController中的page()方法定义如下：  
+    public String page(String page) { return page; }
+  - 在query string: "?operate=page&page=login" 中获取请求参数，参数名是page，参数值是login，因此page()方法的page值会被赋上"login"，然后return "login";
+  - 因为PageController的page()方法是DispatcherServlet通过反射调用的，即method.invoke(...)，因此上一步的字符串"login"返回给DispatcherServlet
+  - DispatcherServlet接受到返回值，然后处理视图。目前处理视图的方式有两种：  
+    1） 带前缀redirect:  
+    2） 不带前缀  
+    当前返回"login"是不带前缀的，那么执行 super.processTemplate("login",request,response);
+  - 此时ViewBaseServlet中的processTemplate方法会执行，效果是：  
+    在"login"前面拼接"/"（其实就是配置文件中的view-prefix配置的值）  
+    在"login"后面拼接".html"（其实就是配置文件中的view-suffix配置的值）  
+    最后进行服务器转发
+### 3) 目前进行JavaWeb项目开发的“套路”
+- 拷贝myssm包
+- 新建配置文件application.xml（可以不叫这个名字或者不写该文件并在web.xml文件中指定）
+- 在web.xml文件中配置：  
+  - 配置前缀和后缀，这样thymeleaf引擎就可以根据我们返回的字符串进行拼接和跳转
+  - 配置监听器读取的参数，目的是加载IOC容器的配置文件（即application.xml）
+- 开发具体业务模块：
+  - 1. 一个具体的业务模块由这几个部分组成：  
+    1） html页面  
+    2） pojo类  
+    3） DAO接口和实现类  
+    4） Service接口和实现类  
+    5） Controller控制器组件  
+  - 2. 如果 html页面有thymeleaf表达式，一定不能直接访问，必须经过pageController
+  - 3. 在applicationContext.xml（注意放在src目录下）中配置DAO、Service、Controller，以及三者间依赖关系
+  - 4. DAO实现类中，继承BaseDAO，然后实现具体的接口（注意BaseDAO后面的泛型不能写错），例如 public class UserDAOImpl extends BaseDAO<User> implements UserDAO {}
+  - 5. Service是业务控制类，只需要保证：  
+    1） 业务逻辑都封装在Service层，不要分散在Controller层，也不要出现在DAO层，我们需要保证DAO方法的单精度特性  
+    2） 当某一业务需要使用其他模块的业务功能时，尽量调用别人的service，而不要深入到其他模块的DAO细节
+  - 6. Controller类的编写规则：  
+    1） 在applicationContext.xml中配置Controller：  
+        < bean id="user" class="com.fizz.qqzone.controller.UserController" >  
+        那么用户在前端发请求时，对应的servletPath就是 /user.do ，其中"user"就是对应此处bean的id值  
+    2） 在Controller中设计的方法名需要和operate的值一致：  
+        public String login(String loginId, String pwd, HttpSession session) { return "index"; }  
+        因此，我们的登录验证的表单如下：  
+        < form th:action="@{user.do}" method="post">  
+          < input type="hidden" name=operate" value="login"/>  
+        < /form>  
+    3） 在表单中，组件的name属性和Controller中方法的参数名一致： 
+        < input type="text" name="loginId"/>  
+        public String login(String loginId, String pwd, HttpSession session) {}  
+    4） 另外，需要注意的是，Controller中的方法中的参数不一定都是通过请求参数（request.getParameter("...")）获取的，在DispatchServlet中对其反射时作了判断，如果是request/response/session则直接赋值
+  - 7. DispatchServlet中步骤大致分为：  
+    0） 从application作用域获取IOC容器（在初始化方法中，仅执行一次）  
+    1） 解析ServletPath，在IOC容器中寻找对应的Controller组件  
+    2） 准备operate指定的方法所要求的参数  
+    3） 调用operate指定的方法  
+    4） 接受到operate指定的方法的返回值，对返回值进行处理（视图解析）  
+  - 8. 为什么DispatchServlet能从application作用域中获取IOC容器？  
+    答：ContextLoaderListener（监听器）在容器启动时会执行初始化任务，而它的操作就是：  
+    1） 解析IOC的配置文件，创建一个一个的组件，并完成组件间依赖关系的注入  
+    2） 将IOC容器保存到application作用域
+
+
