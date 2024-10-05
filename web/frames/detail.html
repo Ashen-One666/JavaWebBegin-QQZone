@@ -26,12 +26,12 @@
                         <img th:if="${session.userBasic.id==session.friend.id}"
                              id="delTopicImg" class="delTopicImg" th:src="@{/imgs/del.jpg}"
                              th:onclick="|delTopic(${session.topic.id})|"/>
-                        <span th:text="${session.topic.title}">《萧某今天就和天下群雄决一死战，你们一起上吧！》</span>
-                        <span class="title_date_right" th:text="${session.topic.topicDate}">2021-09-01 12:30:55</span>
+                        <span th:text="${session.topic.title}">《这里是日志标题》</span>
+                        <span class="title_date_right" th:text="${session.topic.topicDate}">2024-10-01 12:30:55</span>
                     </td>
                 </tr>
                 <tr>
-                    <td th:text="${session.topic.content}">杀母大仇, 岂可当作买卖交易？此仇能报便报, 如不能报, 则我父子毕命于此便了。这等肮脏之事, 岂是我萧氏父子所屑为？</td>
+                    <td th:text="${session.topic.content}">这里是日志内容</td>
                 </tr>
             </table>
         </div>
@@ -56,7 +56,7 @@
                         <img th:if="${session.userBasic.id==session.friend.id || session.userBasic.id==reply.author.id}"
                              th:id="|delReplyImg${reply.id}|" class="delReplyImg" th:src="@{/imgs/del.jpg}"
                              th:onclick="|delReply(${reply.id} , ${session.topic.id})|"/>
-                        <span class="title_date_right" th:text="${reply.replyDate}">2021-09-01 14:35:15</span>
+                        <span class="title_date_right" th:text="${reply.replyDate}">2024-10-01 14:35:15</span>
                     </td>
                 </tr>
                 <tr>
@@ -71,8 +71,9 @@
                                      th:id="|delHostReplyImg${reply.id}|" class="delHostReplyImg" th:src="@{/imgs/del.jpg}"
                                      th:onclick="|delHostReply(${reply.id} , ${session.topic.id})|"/>
                             </li>
-                            <li style="color: #6e0000; font-size: 12px; width: 100%; border: 0px solid red;" th:text="${reply.hostReply.content}"></li>
-                            <li style="color: #6e0000; font-size: 12px; width: 100%; border: 0px solid blue; text-align: right; margin-right: 8px;" th:text="|主人回复于${reply.hostReply.hostReplyDate}|">主人回复于2021/10/01 11:50:30</li>
+                            <li style="color: #6e0000; font-size: 12px; width: 100%; border: 0px solid red;" th:text="${reply.hostReply.content}">这里是主人回复内容</li>
+                            <li style="color: #6e0000; font-size: 12px; width: 100%; border: 0px solid blue; text-align: right; margin-right: 8px;"
+                                th:text="|主人回复于${reply.hostReply.hostReplyDate}|">主人回复于2024-10-01 11:50:30</li>
                         </ul>
 
                         <div th:id="|div_add_host_reply_${reply.id}|" style="display: none;">
