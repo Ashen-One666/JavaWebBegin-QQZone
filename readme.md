@@ -121,6 +121,9 @@
 - 删除主人回复：直接删除
 - 删除回复：如果回复有关联的主人回复，需要先删除主人回复再删除当前回复
 - 删除日志：如果日志有关联的回复，需要先删除回复再删除当前日志
+## 项目URL访问
+- tomcat-Server中设置URL： http://localhost:8080/page.do?operate=page&page=login
+- tomcat-deployment中设置application context: /
 # 六、session中的变量说明
 ### userBasic
 - 用于确认当前登陆者是谁
