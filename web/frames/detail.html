@@ -22,7 +22,7 @@
                         </div>
                         <div class="h32 center" style="width:100%;" th:text="${session.topic.author.nickName}">乔峰</div>
                     </td>
-                    <td class="topic_title" onmousemove="showDelImg('delTopicImg')" onmouseout="hiddenDelImg('delTopicImg')">
+                    <td class="topic_title" onmousemove="showElement('delTopicImg')" onmouseout="hiddenElement('delTopicImg')">
                         <img th:if="${session.userBasic.id==session.friend.id}"
                              id="delTopicImg" class="delTopicImg" th:src="@{/imgs/del.jpg}"
                              th:onclick="|delTopic(${session.topic.id})|"/>
@@ -44,7 +44,9 @@
                         </div>
                         <div class="h32 center" style="width:100%;" th:text="${reply.author.nickName}">段誉</div>
                     </td>
-                    <td class="reply_title" th:onmouseover="|showDelImg('delReplyImg${reply.id}')|" th:onmouseout="|hiddenDelImg('delReplyImg${reply.id}')|">
+                    <td class="reply_title"
+                        th:onmouseover="|showElement('delReplyImg${reply.id}')|"
+                        th:onmouseout="|hiddenElement('delReplyImg${reply.id}')|">
                         <span th:text="|回复:${session.topic.title}|">萧某今天就和天下群雄决一死战，你们一起上吧！</span>
                         <!--
                             出现删除这个小图标的条件：
@@ -58,10 +60,12 @@
                     </td>
                 </tr>
                 <tr>
-                    <td >
+                    <td th:onmouseover="|showElement('a${reply.id}')|"
+                        th:onmouseout="|hiddenElement('a${reply.id}')|">
                         <span th:text="${reply.content}">这里是别人的回复内容</span><br/>
                         <ul style="width: 96%; border: 1px dotted lightgray; list-style-type: none; padding-left: 8px; padding-right: 8px;" th:if="${reply.hostReply != null}"
-                            th:onmouseover="|showDelImg('delHostReplyImg${reply.id}')|" th:onmouseout="|hiddenDelImg('delHostReplyImg${reply.id}')|">
+                            th:onmouseover="|showElement('delHostReplyImg${reply.id}')|"
+                            th:onmouseout="|hiddenElement('delHostReplyImg${reply.id}')|">
                             <li>
                                 <img th:if="${session.userBasic.id==session.friend.id}"
                                      th:id="|delHostReplyImg${reply.id}|" class="delHostReplyImg" th:src="@{/imgs/del.jpg}"
@@ -95,7 +99,8 @@
                         </div>
 
                         <a th:if="${session.userBasic.id==session.friend.id && reply.hostReply==null }"
-                           th:id="|a${reply.id}|" href="#" style="float: right; display: none;" th:onclick="|showReplyBox(${reply.id})|">主人回复</a>
+                           th:id="|a${reply.id}|" href="#" style="float: right; display: none;"
+                           th:onclick="|showReplyBox(${reply.id})|">主人回复</a>
                     </td>
                 </tr>
             </table>

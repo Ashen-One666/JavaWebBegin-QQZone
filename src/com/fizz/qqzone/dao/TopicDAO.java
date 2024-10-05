@@ -10,7 +10,7 @@ public interface TopicDAO {
     public List<Topic> getTopicList(UserBasic userBasic);
 
     // 添加日志
-    public void addTopic(Topic topic);
+    public Topic addTopic(Topic topic);
 
     // 删除日志
     public void delTopic(Topic topic);

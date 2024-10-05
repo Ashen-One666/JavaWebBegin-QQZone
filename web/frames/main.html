@@ -5,18 +5,12 @@
     <title>Title</title>
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <script language="JavaScript">
-        function delTopic(topicId){
-            if(window.confirm("是否确认删除日志？")){
-                window.location.href="topic.do?operate=delTopic&topicId="+topicId;
-            }
-        }
-    </script>
+    <script src="../js/main.js"></script>
 </head>
 <body>
     <div id="div_topic_list">
-        <div id="div_to_add">
-            <p class="right8">发表新日志</p>
+        <div id="div_to_add" th:if="${session.userBasic.id==session.friend.id}">
+            <a class="right8" th:href="@{/topic.do?operate=showNewTopicPage}" >发布新日志</a>
         </div>
         <table id="tbl_topic_list">
             <tr>

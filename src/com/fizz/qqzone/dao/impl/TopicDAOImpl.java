@@ -15,13 +15,14 @@ public class TopicDAOImpl extends BaseDAO<Topic> implements TopicDAO {
     }
 
     @Override
-    public void addTopic(Topic topic) {
-
+    public Topic addTopic(Topic topic) {
+        super.executeUpdate("insert into t_topic values(0,?,?,?,?)", topic.getTitle(), topic.getContent(), topic.getTopicDate(), topic.getAuthor().getId());
+        return super.load("select * from t_topic where id = last_insert_id()");
     }
 
     @Override
     public void delTopic(Topic topic) {
-
+        super.executeUpdate("delete from t_topic where id = ?", topic.getId());
     }
 
     @Override

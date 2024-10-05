@@ -44,7 +44,7 @@
 &ensp; - 查询批次较高的情况下，则要降低数据库的设计范式，允许特定的冗余，从而提高查询性能
 &ensp; (另外，注意数据库设计时主键尽量不要和业务逻辑产生关系，即主键应该是无意义的，如自增id)
 
-# 项目错误和解决方案
+# 四、项目错误和解决方案
 ### 1. IDEA收到浏览器返回的参数值全部为null
 - 原因：在 Java 8 之前，编译后的 .class 文件不包含参数名称， 导致通过反射获取方法参数名时只能得到默认的
   arg0, arg1 等名字。Java 8 提供了一个新的编译选项 -parameters， 可以在编译时将参数名保留到 .class 文件中，
@@ -81,8 +81,12 @@
 ### 8. 添加回复时数据库未获取到输入框中的内容
 - 原因：detail.html中 <textarea ... > 里面没有name属性，controller无法从页面中的输入框中获取输入信息
 - 方法：<td><textarea name="content" rows="3">这里是另一个回复！</textarea></td> （注意：name的值要和controller中方法里的参数名一致）
+### 9. 删除带有主人回复的reply失败
+- 报错：Cannot delete or update a parent row: a foreign key constraint fails (`qqzonedb2`.`t_host_reply`, CONSTRAINT `FK_host_reply` FOREIGN KEY (`reply`) REFERENCES `t_reply` (`id`))
+- 原因：主人回复表t_host_reply中有外键约束（列reply引用了表t_reply中的列id），想要删除主表数据必须保证没有子表引用它
+- 方法：先删除子表（t_host_reply）数据，即在ReplyService的delReply方法中进行修改
 
-# 实现过程和注意事项
+# 五、实现过程和注意事项
 ## 主界面
 ### index.html
 - 3个iframe，每个iframe通过thymeleaf渲染出top/left/main.html
@@ -106,3 +110,11 @@
 ## 添加回复
 ## 添加主人回复
 ## 删除日志功能
+- 删除主人回复：直接删除
+- 删除回复：如果回复有关联的主人回复，需要先删除主人回复再删除当前回复
+- 删除日志：如果日志有关联的回复，需要先删除回复再删除当前日志
+# 六、session中的变量说明
+### userBasic
+- 用于确认当前登陆者是谁
+### friend
+- 当前页面显示的qq空间的所有者是谁 (userBasic和friend不一致时，当前的登录者就没有修改他人空间的权限)

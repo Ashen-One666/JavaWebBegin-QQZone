@@ -11,4 +11,8 @@ public interface TopicService {
 
     // 根据id查询特定的日志列表
     Topic getTopicById(Integer id);
+
+    void delTopic(Integer id);
+
+    Topic addTopic(Topic topic);
 }

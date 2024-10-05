@@ -32,10 +32,22 @@ public class TopicServiceImpl implements TopicService {
         author = userBasicService.getUserBasicById(author.getId());
         topic.setAuthor(author);
 
-        System.out.println("my topic is : " + topic.getId());
-
         List<Reply> replyList = replyService.getReplyListByTopicId(topic.getId());
         topic.setReplyList(replyList);
         return topic;
+    }
+
+    @Override
+    public void delTopic(Integer id) {
+        Topic topic = topicDAO.getTopic(id);
+        if(topic != null) {
+            replyService.delReplyListByTopicId(topic.getId());
+            topicDAO.delTopic(topic);
+        }
+    }
+
+    @Override
+    public Topic addTopic(Topic topic) {
+        return topicDAO.addTopic(topic);
     }
 }

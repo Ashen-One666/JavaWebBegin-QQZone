@@ -1,13 +1,15 @@
-function showDelImg(imgId){
-    var obj = document.getElementById(imgId) ;
+function showElement(elementId){
+    var obj = document.getElementById(elementId) ;
     if(obj){
+        console.log("Showing element:", elementId);
         obj.style.display='inline';
     }
 
 }
-function hiddenDelImg(imgId){
-    var obj = document.getElementById(imgId) ;
+function hiddenElement(elementId){
+    var obj = document.getElementById(elementId) ;
     if(obj){
+        console.log("hiding element:", elementId);
         obj.style.display='none';
     }
 }

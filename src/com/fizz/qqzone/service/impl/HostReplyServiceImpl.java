@@ -2,10 +2,8 @@ package com.fizz.qqzone.service.impl;
 
 import com.fizz.qqzone.dao.HostReplyDAO;
 import com.fizz.qqzone.pojo.HostReply;
-import com.fizz.qqzone.pojo.Reply;
 import com.fizz.qqzone.pojo.UserBasic;
 import com.fizz.qqzone.service.HostReplyService;
-import com.fizz.qqzone.service.ReplyService;
 import com.fizz.qqzone.service.UserBasicService;
 
 public class HostReplyServiceImpl implements HostReplyService {
@@ -31,5 +29,15 @@ public class HostReplyServiceImpl implements HostReplyService {
     @Override
     public void addHostReply(HostReply hostReply) {
         hostReplyDAO.addHostReply(hostReply);
+    }
+
+    @Override
+    public void delHostReply(Integer id) {
+        hostReplyDAO.delHostReply(id);
+    }
+
+    @Override
+    public void delHostReplyByReplyId(Integer replyId) {
+        hostReplyDAO.delHostReplyByReplyId(replyId);
     }
 }

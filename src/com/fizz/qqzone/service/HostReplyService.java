@@ -6,4 +6,8 @@ public interface HostReplyService {
     HostReply getHostReplyByReplyId(Integer replyId);
 
     void addHostReply(HostReply hostReply);
+
+    void delHostReply(Integer id);
+
+    void delHostReplyByReplyId(Integer replyId);
 }

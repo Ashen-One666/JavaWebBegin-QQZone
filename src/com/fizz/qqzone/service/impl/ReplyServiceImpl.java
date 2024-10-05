@@ -7,7 +7,6 @@ import com.fizz.qqzone.pojo.Topic;
 import com.fizz.qqzone.pojo.UserBasic;
 import com.fizz.qqzone.service.HostReplyService;
 import com.fizz.qqzone.service.ReplyService;
-import com.fizz.qqzone.service.TopicService;
 import com.fizz.qqzone.service.UserBasicService;
 
 import java.util.Collections;
@@ -46,5 +45,31 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     public void addReply(Reply reply) {
         replyDAO.addReply(reply);
+    }
+
+    @Override
+    public void delReply(Integer id) {
+        // 1.根据id获取reply
+        Reply reply = replyDAO.getReplyById(id);
+        // 2.如果reply有关联的hostReply，则先删除hostReply
+        if (reply != null) {
+            HostReply hostReply = hostReplyService.getHostReplyByReplyId(reply.getId());
+            if (hostReply != null) {
+                hostReplyService.delHostReply(hostReply.getId());
+            }
+            // 3.删除reply
+            replyDAO.delReply(id);
+        }
+    }
+
+    @Override
+    public void delReplyListByTopicId(Integer topicId) {
+        List<Reply> replyList = replyDAO.getReplyList(new Topic(topicId));
+        if (replyList != null) {
+            for (Reply reply : replyList) {
+                // 在delReply内部已经考虑了删除关联的主人回复了
+                delReply(reply.getId());
+            }
+        }
     }
 }

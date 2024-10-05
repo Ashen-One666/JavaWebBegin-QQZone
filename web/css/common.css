@@ -38,7 +38,7 @@ table tr , table td ,table th{
 }
 .right8{
     text-align: right;
-    margin-right:8px;
+    margin-right: 8px;
 }
 .border_test{
     border:1px solid red;

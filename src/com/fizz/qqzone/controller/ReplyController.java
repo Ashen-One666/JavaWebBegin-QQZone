@@ -20,4 +20,9 @@ public class ReplyController {
         // 更新之后的跳转需要重定向才能将更新后的信息显示在页面上
         return "redirect:topic.do?operate=topicDetail&id="+topicId;
     }
+
+    public String delReply(Integer replyId, Integer topicId) {
+        replyService.delReply(replyId);
+        return "redirect:topic.do?operate=topicDetail&id="+topicId;
+    }
 }
