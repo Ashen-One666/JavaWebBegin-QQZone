@@ -1,6 +1,9 @@
 # 项目说明
 - 手写类Springboot包，用于JavaWeb入门
 - 类似QQ空间，前端使用js和thymeleaf，后端使用手写的类Springboot包
+# 项目配置
+- jdk 1.8.0
+- tomcat 9.0.93
 # 一、QQZone业务需求
 ### 1. 用户登录
 （已实现）
