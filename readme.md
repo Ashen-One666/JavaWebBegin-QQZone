@@ -1,3 +1,6 @@
+# 项目说明
+- 手写类Springboot包，用于JavaWeb入门
+- 类似QQ空间，前端使用js和thymeleaf，后端使用手写的类Springboot包
 # 一、QQZone业务需求
 ### 1. 用户登录
 （已实现）
@@ -121,6 +124,12 @@
 - 删除主人回复：直接删除
 - 删除回复：如果回复有关联的主人回复，需要先删除主人回复再删除当前回复
 - 删除日志：如果日志有关联的回复，需要先删除回复再删除当前日志
+## 数据库连接
+- 将数据库连接的配置写在src/jdbc.properties中，然后在ConnUtil中获取
+- 更新：修改了BaseDAO（改写了ConnUtil），让其支持properties文件以及druid数据库连接池  
+  有两种连接数据库方式：
+  - 直接自己配置properties，然后读取，然后加载驱动...
+  - 使用druid技术，那么properties中的key取名是有要求的
 ## 项目URL访问
 - tomcat-Server中设置URL： http://localhost:8080/page.do?operate=page&page=login
 - tomcat-deployment中设置application context: /
